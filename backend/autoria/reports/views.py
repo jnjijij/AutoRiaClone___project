@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
@@ -41,7 +42,52 @@ class ReportDeleteAllView(View):
         for report in report_list:
             report.delete()
         return redirect('reports:report_list', auto_id=auto.pk)
+class ReportCreateView(View):
+    def post(self, request, *args, **kwargs):
+        data = request.json()
+        report = Report.objects.create(
+            name=data['name'],
+            description=data['description'],
+        )
+        data = {
+            'id': report.id,
+            'name': report.name,
+            'description': report.description,
+            'created_at': report.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+        }
+        return JsonResponse(data)
 
+class ReportDetailView(View):
+    def get(self, request, report_id, *args, **kwargs):
+        report = Report.objects.get(id=report_id)
+        data = {
+            'id': report.id,
+            'name': report.name,
+            'description':report.description,
+            'created_at': report.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+        }
+        return JsonResponse(data)
+
+class ReportUpdateView(View):
+    def put(self, request, report_id):
+        report = Report.objects.get(id=report_id)
+        data = request.json()
+        report.name = data['name']
+        report.description = data['description']
+        report.save()
+        data = {
+            'id': report.id,
+            'name': report.name,
+            'description': report.description,
+            'created_at': report.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+        }
+        return JsonResponse(data)
+
+class ReportDeleteView(View):
+    def delete(self, report_id):
+        report = Report.objects.get(id=report_id)
+        report.delete()
+        return JsonResponse({'message': 'Report deleted successfully.'})
 
 def auto_image_update(request, auto_pk, image_pk):
     auto_image = AutoImage.objects.get(pk=image_pk)

@@ -10,14 +10,13 @@ from frontend.system.cars_search import app
 def create_car():
     new_data = request.json
 
-    if check_profanity(new_data['title']):
+    if check_profanity():
         return jsonify({'error': 'Profanity is not allowed'}), 400
 
 @app.route('/api/cars/<int:car_id>', methods=['PUT'])
 def update_car(car_id):
     new_data = request.json
-
-    return edit_car(car_id, new_data)
+    return edit_car()
 
 
 class AdInfo:

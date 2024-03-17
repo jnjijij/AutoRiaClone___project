@@ -43,8 +43,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'message': message
         }))
 
-        application = ProtocolTypeRouter({
-            'websocket': URLRouter([
-                path('ws/chat/', consumers.ChatConsumer.as_asgi()),
-            ]),
-        })
+        ProtocolTypeRouter(dict(websocket=URLRouter((
+            path('ws/chat/', consumers.ChatConsumer.as_asgi()),
+        ))))

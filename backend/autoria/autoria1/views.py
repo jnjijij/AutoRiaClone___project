@@ -1,9 +1,6 @@
 from django.http import JsonResponse
 from django.views import View
-
-
-from backend.listings.models import Ad
-
+from .models import Ad
 
 class AdListView(View):
     def get(self, request, *args, **kwargs):
@@ -33,7 +30,7 @@ class AdDetailView(View):
 
 class AdCreateView(View):
     def post(self, request, *args, **kwargs):
-        data = request.POST
+        data = request.json()
         ad = Ad.objects.create(
             title=data['title'],
             description=data['description'],
@@ -52,7 +49,7 @@ class AdCreateView(View):
 class AdUpdateView(View):
     def put(self, request, ad_id, *args, **kwargs):
         ad = Ad.objects.get(id=ad_id)
-        data = request.POST
+        data = request.json()
         ad.title = data['title']
         ad.description = data['description']
         ad.price = data['price']
